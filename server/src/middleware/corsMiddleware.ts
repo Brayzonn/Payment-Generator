@@ -1,8 +1,11 @@
-import cors, { CorsOptions } from 'cors';
+import { CorsOptions } from 'cors';
 
-const corsOptions: CorsOptions = {
-  origin: ['http://localhost:3000'],
-  credentials: true
+export const corsOptions: CorsOptions = {
+  origin: ['http://localhost:4000'],
+  credentials: true,
+  maxAge: 1800, 
+  allowedHeaders: ['content-type', 'Authorization'], 
+  methods: ['PUT', 'POST', 'GET', 'DELETE', 'PATCH', 'OPTIONS'],
 };
 
-export default cors(corsOptions);
+

@@ -1,11 +1,14 @@
-import mongoose, { ConnectOptions } from 'mongoose';
+import mongoose from 'mongoose';
 require('dotenv').config();
 
-const mongoURI = `mongodb+srv://${process.env.MongoName}:${process.env.MongoPass}@zoneyprojects.sjbew2h.mongodb.net/minilink?retryWrites=true&w=majority`
+
 
 
 //connect to Mongo
-async function connectToDatabase() {
+export default async function connectToDatabase() {
+
+    const mongoURI = `mongodb+srv://${process.env.MongoName}:${process.env.MongoPass}@zoneyprojects.sjbew2h.mongodb.net/minilink?retryWrites=true&w=majority`
+    
     try {
       await mongoose.connect(mongoURI, {
         useNewUrlParser: true,
@@ -17,4 +20,4 @@ async function connectToDatabase() {
     }
   }
 
-export default connectToDatabase
+

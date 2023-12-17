@@ -1,15 +1,10 @@
 const router = require("express").Router();
-import { Request, Response, NextFunction } from 'express'
 
-import { signin } from '../controllers/mainController'; 
+import { generateLink, getLinkData } from '../controllers/mainController'; 
 
+router.get('/getlinkdata', getLinkData)
 
-router.get('/', (req: Request, res: Response , next: NextFunction)=>{
-    res.send('fuck off!!')
-})
-
-router.post('/signin', signin)
-
+router.post('/generatelink', generateLink)
 
 
 export default router 

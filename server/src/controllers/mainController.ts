@@ -1,42 +1,59 @@
-import signInFnc from '../config/signinLogic'
 import { Request, Response, NextFunction } from 'express'
-import jwt from 'jsonwebtoken';
+
+
+//models
+import userModel from '../models/usermodel'
 
 //env variable
 require('dotenv').config();
 
-//generate user token
-const generateUserToken = (id: any) => {
-    // Check if process.env.JWT_SECRET is defined
-    if (!process.env.JWT_SECRET) {
-        throw new Error('JWT secret is not defined');
-    }
+const getLinkData = async (req: Request, res: Response , next: NextFunction ) =>{
 
-    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
-};
-
-
-const signin = async (req: Request, res: Response , next: NextFunction) => {
-
-    const username = req.body.username;
-    const password = req.body.password;
-
-    if(!username || !password){
-       return res.status(401).json({success: false, message: 'Please complete all fields'})
-    }
+    const {linkID} = req.body;
 
     try {
-       const LoginResponse = await signInFnc(username, password);
-       
-       if(LoginResponse.successMessage){
-            res.status(200).json({success: true, message: LoginResponse.successMessage})
-       }else{
-            res.status(401).json({ success: false, message: LoginResponse.errMsg, token: generateUserToken(LoginResponse.userId) });
-       }
-       
+        const fetchLink = await userModel.findOne({_id: linkID})
+
+        if(!fetchLink){
+           return res.status(200).json({success: false, message: 'Link unavailable, please generate new link.' });
+        }else{
+            return res.status(200).json({success: true, data: fetchLink });
+        }
+    } catch (error) {
+        
+    }
+
+}
+
+const generateLink = async (req: Request, res: Response , next: NextFunction) => {
+
+    const {paymentChannel, paymentAddress,
+    paymentAmount, payerName}         = req.body;
+    
+    try {
+
+        if(!paymentChannel || !paymentAddress || !paymentAmount || !payerName){
+           return res.status(200).json({success: false, message: 'Complete all fields' });
+        }
+
+        const UserRequest = new userModel({
+            paymentChannel: paymentChannel,
+            paymentAddress : paymentAddress,
+            paymentAmount: paymentAmount,
+            payerName: payerName,
+        })
+
+        await UserRequest.save()
+
+        return res.status(200).json({success: true, 
+                                    message: 'Crptocurrency Payment Channel Generated', 
+                                    bodyData: UserRequest ? UserRequest : {}
+                                    })
     } catch (error) {
         res.status(500).json({success: false, message: 'Internal server error' });
     }  
+    
 }
 
-export { signin };
+
+export { generateLink, getLinkData };
